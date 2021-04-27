@@ -27,6 +27,9 @@ export function AddPostForm(props) {
     setSelectedAuthor('')
   }
 
+  const canSave =
+    content.length > 0 && title.length > 0 && selectedAuthor !== ''
+
   return (
     <section>
       <h2>Add a New Post</h2>
@@ -49,9 +52,11 @@ export function AddPostForm(props) {
             name="author"
             id="author"
           >
-            <option value="">Select Author...</option>
+            <option value=""></option>
             {users.map((user) => (
-              <option value={user.id}>{user.name}</option>
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
             ))}
           </select>
         </label>
@@ -66,7 +71,9 @@ export function AddPostForm(props) {
             rows="10"
           ></textarea>
         </label>
-        <button type="submit">Save Post</button>
+        <button type="submit" disabled={!canSave}>
+          Save Post
+        </button>
       </form>
     </section>
   )
