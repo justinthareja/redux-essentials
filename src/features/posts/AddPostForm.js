@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { useDispatch } from 'react-redux'
-import { nanoid } from '@reduxjs/toolkit'
 import { addPost } from './postsSlice'
 
 export function AddPostForm(props) {
@@ -18,7 +17,7 @@ export function AddPostForm(props) {
       return
     }
 
-    dispatch(addPost({ title, content, id: nanoid() }))
+    dispatch(addPost(title, content))
     setTitle('')
     setContent('')
   }
