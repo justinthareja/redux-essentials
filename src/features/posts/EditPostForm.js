@@ -1,35 +1,32 @@
 import * as React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useHistory } from 'react-router'
 import { updatePost } from './postsSlice'
 
-export function EditPostForm({ postId, onSubmit }) {
-  const [title, setTitle] = React.useState('')
-  const [content, setContent] = React.useState('')
-
-  const dispatch = useDispatch()
+export function EditPostForm({ match }) {
+  const { postId } = match.params
   const post = useSelector((state) =>
     state.posts.find((post) => post.id === postId)
   )
 
-  React.useEffect(() => {
-    setTitle(post.title)
-    setContent(post.content)
-  }, [post])
+  const [title, setTitle] = React.useState(post.title)
+  const [content, setContent] = React.useState(post.content)
+
+  const dispatch = useDispatch()
+  const history = useHistory()
 
   const onTitleChange = (e) => setTitle(e.target.value)
   const onContentChange = (e) => setContent(e.target.value)
 
   const onFormSubmit = (e) => {
     e.preventDefault()
-    onSubmit && onSubmit()
 
     if (content.length === 0 || title.length === 0) {
       return
     }
 
     dispatch(updatePost({ title, content, id: postId }))
-    setTitle('')
-    setContent('')
+    history.push(`/posts/${postId}`)
   }
 
   if (!post) {
