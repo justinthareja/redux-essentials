@@ -1,25 +1,30 @@
 import * as React from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addPost } from './postsSlice'
 
 export function AddPostForm(props) {
   const [title, setTitle] = React.useState('')
   const [content, setContent] = React.useState('')
+  const [selectedAuthor, setSelectedAuthor] = React.useState('')
+
   const dispatch = useDispatch()
+  const users = useSelector((state) => state.users)
 
   const onTitleChange = (e) => setTitle(e.target.value)
   const onContentChange = (e) => setContent(e.target.value)
+  const onAuthorChange = (e) => setSelectedAuthor(e.target.value)
 
   const onFormSubmit = (e) => {
     e.preventDefault()
 
-    if (content.length === 0 || title.length === 0) {
+    if (content.length === 0 || title.length === 0 || selectedAuthor === '') {
       return
     }
 
-    dispatch(addPost(title, content))
+    dispatch(addPost(title, content, selectedAuthor))
     setTitle('')
     setContent('')
+    setSelectedAuthor('')
   }
 
   return (
@@ -35,6 +40,20 @@ export function AddPostForm(props) {
             name="title"
             id="title"
           />
+        </label>
+        <label htmlFor="author">
+          Author
+          <select
+            value={selectedAuthor}
+            onChange={onAuthorChange}
+            name="author"
+            id="author"
+          >
+            <option value="">Select Author...</option>
+            {users.map((user) => (
+              <option value={user.id}>{user.name}</option>
+            ))}
+          </select>
         </label>
         <label htmlFor="content">
           Content

@@ -10,6 +10,7 @@ export function PostDetailsPage({ match }) {
   const post = useSelector((state) =>
     state.posts.find((post) => post.id === postId)
   )
+  const users = useSelector((state) => state.users)
 
   if (!post) {
     return (
@@ -19,10 +20,13 @@ export function PostDetailsPage({ match }) {
     )
   }
 
+  // this could probably be a custom selector
+  const postAuthor = users.find((user) => user.id === post.author)
   return (
     <section>
       <article className="post">
         <h2>{post.title}</h2>
+        <small>{postAuthor.name}</small>
         <p className="post-content">{post.content}</p>
       </article>
       <Link to={`/editPost/${post.id}`}>Edit Post</Link>

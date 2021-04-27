@@ -1,8 +1,8 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit'
 
 const initialState = [
-  { id: '1', title: 'First Post', content: 'Hello' },
-  { id: '2', title: 'Second Post', content: 'World' },
+  { id: '1', title: 'First Post', content: 'Hello', author: '0' },
+  { id: '2', title: 'Second Post', content: 'World', author: '1' },
 ]
 
 const postsSlice = createSlice({
@@ -22,12 +22,13 @@ const postsSlice = createSlice({
       // now when you dispatch(addPost()) it takes title and content
       // as the two arguments. this allows us to centralize
       // the id creation or any other info before going to the reducer step
-      prepare(title, content) {
+      prepare(title, content, author) {
         return {
           payload: {
             id: nanoid(),
             title,
             content,
+            author,
           },
         }
       },
