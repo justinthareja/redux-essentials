@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { PostAuthor } from './PostAuthor'
 import { TimeAgo } from './TimeAgo'
+import { ReactionButtons } from './ReactionButtons'
 
 export function PostsList(props) {
   // useSelector receives the whole state object
@@ -20,6 +21,7 @@ export function PostsList(props) {
         <PostAuthor authorId={post.author} />
         <TimeAgo timestamp={post.date} />
         <p className="post-content">{post.content.substring(0, 100)}</p>
+        <ReactionButtons postId={post.id} />
         <Link to={`/posts/${post.id}`} className="button muted-button">
           View Post
         </Link>
