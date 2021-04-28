@@ -73,6 +73,8 @@ const postsSlice = createSlice({
       post.title = action.payload.title
     },
     incrementReactionCount: (state, action) => {
+      // reducers can contain as much logic as necessary to calculate the new state
+      // better to do these calculations in a reducer than an action
       const { postId, reaction } = action.payload
       const post = state.find((p) => p.id === postId)
       if (

@@ -27,7 +27,7 @@ export function PostDetailsPage({ match }) {
         <h2>{post.title}</h2>
         <PostAuthor authorId={post.author} />
         <p className="post-content">{post.content}</p>
-        <ReactionButtons postId={post.id} />
+        <ReactionButtons post={post} />
       </article>
       <Link to={`/editPost/${post.id}`}>Edit Post</Link>
     </section>

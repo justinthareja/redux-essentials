@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { incrementReactionCount } from './postsSlice'
 
 export const reactionEmojis = {
@@ -10,30 +10,25 @@ export const reactionEmojis = {
   eyes: '👀',
 }
 
-export function ReactionButtons({ postId }) {
+export function ReactionButtons({ post }) {
   const dispatch = useDispatch()
-  const reactions = useSelector(
-    (state) => state.posts.find((post) => post.id === postId).reactions
-  )
 
   const onButtonClick = (reaction) => () => {
-    dispatch(incrementReactionCount({ postId, reaction }))
+    dispatch(incrementReactionCount({ postId: post.id, reaction }))
   }
 
-  const buttons = Object.entries(reactionEmojis).map(
-    ([reaction, reactionEmoji]) => {
-      const count = reactions[reaction]
-      return (
-        <button
-          key={reaction}
-          className="button reaction-button"
-          onClick={onButtonClick(reaction)}
-        >
-          {reactionEmoji} {count}
-        </button>
-      )
-    }
-  )
+  const buttons = Object.entries(reactionEmojis).map(([name, emoji]) => {
+    const count = post.reactions[name]
+    return (
+      <button
+        key={name}
+        className="muted-button reaction-button"
+        onClick={onButtonClick(name)}
+      >
+        {emoji} {count}
+      </button>
+    )
+  })
 
   return <div>{buttons}</div>
 }
