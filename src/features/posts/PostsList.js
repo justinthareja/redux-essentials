@@ -30,7 +30,9 @@ export function PostsList(props) {
       .slice()
       .sort((a, b) => b.date.localeCompare(a.date))
 
-    content = sortedPosts.map((post) => <PostExcerpt post={post} />)
+    content = sortedPosts.map((post) => (
+      <PostExcerpt key={post.id} post={post} />
+    ))
   }
 
   return (

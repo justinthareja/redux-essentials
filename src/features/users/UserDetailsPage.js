@@ -14,7 +14,9 @@ export function UserDetailsPage({ match }) {
     return posts.filter((post) => post.user === userId)
   })
 
-  const renderedUserPosts = userPosts.map((post) => <PostExcerpt post={post} />)
+  const renderedUserPosts = userPosts.map((post) => (
+    <PostExcerpt key={post.id} post={post} />
+  ))
 
   return (
     <section>

@@ -15,6 +15,7 @@ import { UsersList } from './features/users/UsersList'
 import { fetchUsers } from './features/users/usersSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { UserDetailsPage } from './features/users/UserDetailsPage'
+import { NotificationsList } from './features/notifications/NotificationsList'
 
 function App() {
   const dispatch = useDispatch()
@@ -55,6 +56,7 @@ function App() {
           <Route exact path="/editPost/:postId" component={EditPostForm} />
           <Route exact path="/users" component={UsersList} />
           <Route exact path="/users/:userId" component={UserDetailsPage} />
+          <Route exact path="/notifications" component={NotificationsList} />
           <Redirect to="/" />
         </Switch>
       </div>
