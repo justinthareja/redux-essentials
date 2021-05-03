@@ -1,36 +1,17 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit'
-import { sub } from 'date-fns'
+import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit'
+import { client } from '../../api/client'
 
-const initialState = [
-  {
-    id: '1',
-    title: 'First Post',
-    content: 'Hello',
-    author: '0',
-    date: sub(new Date(), { minutes: 10 }).toISOString(),
-    reactions: {
-      thumbsUp: 0,
-      hooray: 0,
-      heart: 0,
-      rocket: 0,
-      eyes: 0,
-    },
-  },
-  {
-    id: '2',
-    title: 'Second Post',
-    content: 'World',
-    author: '1',
-    date: sub(new Date(), { minutes: 5 }).toISOString(),
-    reactions: {
-      thumbsUp: 0,
-      hooray: 0,
-      heart: 0,
-      rocket: 0,
-      eyes: 0,
-    },
-  },
-]
+const initialState = {
+  status: 'idle',
+  error: null,
+  posts: [],
+}
+
+// createAsyncThunk will dispatch "pending" "error" and "success" actions
+export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
+  const response = await client.get('/fakeApi/posts')
+  return response.posts
+})
 
 const postsSlice = createSlice({
   name: 'posts',
@@ -41,7 +22,7 @@ const postsSlice = createSlice({
       reducer: (state, action) => {
         // can only use state and action to update state
         // anything else will cause bugs
-        state.push(action.payload)
+        state.posts.push(action.payload)
       },
 
       // by default, the action creator returned from createSlice takes
@@ -71,7 +52,7 @@ const postsSlice = createSlice({
       },
     },
     updatePost: (state, action) => {
-      const post = state.find((p) => p.id === action.payload.id)
+      const post = state.posts.find((p) => p.id === action.payload.id)
       if (!post) {
         return
       }
@@ -83,7 +64,7 @@ const postsSlice = createSlice({
       // reducers can contain as much logic as necessary to calculate the new state
       // better to do these calculations in a reducer than an action
       const { postId, reaction } = action.payload
-      const post = state.find((p) => p.id === postId)
+      const post = state.posts.find((p) => p.id === postId)
       if (
         !(
           post &&
@@ -97,16 +78,29 @@ const postsSlice = createSlice({
       post.reactions[reaction]++
     },
   },
+  extraReducers: {
+    [fetchPosts.pending]: (state, action) => {
+      state.status = 'loading'
+    },
+    [fetchPosts.fulfilled]: (state, action) => {
+      state.status = 'success'
+      state.posts = state.posts.concat(action.payload)
+    },
+    [fetchPosts.rejected]: (state, action) => {
+      state.status = 'error'
+      state.error = action.error.message
+    },
+  },
 })
 
 // selector functions - decouples redux state shape from components
 // state for selector functions is root redux state
 // not necessary for everything, but a good idea when accessing the
 // same state in many places
-export const selectAllPosts = (state) => state.posts
+export const selectAllPosts = (state) => state.posts.posts
 
 export const selectPostById = (postId) => (state) =>
-  state.posts.find((post) => post.id === postId)
+  state.posts.posts.find((post) => post.id === postId)
 
 export const {
   addPost,
