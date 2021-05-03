@@ -39,7 +39,7 @@ export function PostsList(props) {
           <Link to={`/posts/${post.id}`}>
             <h3>{post.title}</h3>
           </Link>
-          <PostAuthor authorId={post.author} />
+          <PostAuthor authorId={post.user} />
           <TimeAgo timestamp={post.date} />
           <p className="post-content">{post.content.substring(0, 100)}</p>
           <ReactionButtons post={post} />

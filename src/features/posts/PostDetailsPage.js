@@ -24,7 +24,7 @@ export function PostDetailsPage({ match }) {
     <section>
       <article className="post">
         <h2>{post.title}</h2>
-        <PostAuthor authorId={post.author} />
+        <PostAuthor authorId={post.user} />
         <p className="post-content">{post.content}</p>
         <ReactionButtons post={post} />
       </article>

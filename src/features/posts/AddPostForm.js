@@ -8,7 +8,7 @@ export function AddPostForm(props) {
   const [selectedAuthor, setSelectedAuthor] = React.useState('')
 
   const dispatch = useDispatch()
-  const users = useSelector((state) => state.users)
+  const users = useSelector((state) => state.users.users)
 
   const onTitleChange = (e) => setTitle(e.target.value)
   const onContentChange = (e) => setContent(e.target.value)
