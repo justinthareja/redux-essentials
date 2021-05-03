@@ -1,11 +1,13 @@
 import * as React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addPost } from './postsSlice'
+import { unwrapResult } from '@reduxjs/toolkit'
+import { addNewPost } from './postsSlice'
 
 export function AddPostForm(props) {
   const [title, setTitle] = React.useState('')
   const [content, setContent] = React.useState('')
   const [selectedAuthor, setSelectedAuthor] = React.useState('')
+  const [addRequestStatus, setAddRequestStatus] = React.useState('idle')
 
   const dispatch = useDispatch()
   const users = useSelector((state) => state.users.users)
@@ -14,21 +16,42 @@ export function AddPostForm(props) {
   const onContentChange = (e) => setContent(e.target.value)
   const onAuthorChange = (e) => setSelectedAuthor(e.target.value)
 
-  const onFormSubmit = (e) => {
+  const canSave =
+    content.length > 0 &&
+    title.length > 0 &&
+    selectedAuthor !== '' &&
+    addRequestStatus === 'idle'
+
+  const onFormSubmit = async (e) => {
     e.preventDefault()
 
-    if (content.length === 0 || title.length === 0 || selectedAuthor === '') {
-      return
+    if (canSave) {
+      try {
+        // only want to know if the request in in progress or not
+        setAddRequestStatus('pending')
+
+        // dispatch(thunk) returns a promise that will resolve when request
+        // completes. the promise will resolve as the final action
+        // either "fulfilled" or "rejected"
+        const resultAction = await dispatch(
+          addNewPost({ title, content, user: selectedAuthor })
+        )
+
+        // unwrapResult will check to see if
+        // fulfilled, it will just return the action.payload
+        // or throw an error this allows us to use try catch as expected
+        unwrapResult(resultAction)
+
+        setTitle('')
+        setContent('')
+        setSelectedAuthor('')
+      } catch (e) {
+        console.error('error adding post', e)
+      } finally {
+        setAddRequestStatus('idle')
+      }
     }
-
-    dispatch(addPost(title, content, selectedAuthor))
-    setTitle('')
-    setContent('')
-    setSelectedAuthor('')
   }
-
-  const canSave =
-    content.length > 0 && title.length > 0 && selectedAuthor !== ''
 
   return (
     <section>

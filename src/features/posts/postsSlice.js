@@ -9,9 +9,20 @@ const initialState = {
 
 // createAsyncThunk will dispatch "pending" "error" and "success" actions
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
+  // this callback is considred a "payload creator"
+  // whatever is returned here will be used as action.payload
+  // for the action.type of "posts/fetchPosts/fulfilled"
   const response = await client.get('/fakeApi/posts')
   return response.posts
 })
+
+export const addNewPost = createAsyncThunk(
+  'posts/addNewPost',
+  async (initialPost) => {
+    const response = await client.post('/fakeApi/posts', { post: initialPost })
+    return response.post
+  }
+)
 
 const postsSlice = createSlice({
   name: 'posts',
@@ -89,6 +100,9 @@ const postsSlice = createSlice({
     [fetchPosts.rejected]: (state, action) => {
       state.status = 'error'
       state.error = action.error.message
+    },
+    [addNewPost.fulfilled]: (state, action) => {
+      state.posts.push(action.payload)
     },
   },
 })
