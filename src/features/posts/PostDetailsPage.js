@@ -3,15 +3,14 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { PostAuthor } from './PostAuthor'
 import { ReactionButtons } from './ReactionButtons'
+import { selectPostById } from './postsSlice'
 
 export function PostDetailsPage({ match }) {
   const { postId } = match.params
   // component will re-render any time the value returned from
   // useSelector changes to a new reference. only select smallest
   // values you need to avoid unnecessary re-renders
-  const post = useSelector((state) =>
-    state.posts.find((post) => post.id === postId)
-  )
+  const post = useSelector(selectPostById(postId))
 
   if (!post) {
     return (
