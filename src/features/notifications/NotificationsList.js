@@ -1,14 +1,24 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { formatDistanceToNow, parseISO } from 'date-fns'
+import cx from 'classnames'
 
 import { selectAllUsers } from '../users/usersSlice'
 
-import { selectAllNotifications } from './notificationsSlice'
+import {
+  allNotificationsRead,
+  selectAllNotifications,
+} from './notificationsSlice'
 
 export const NotificationsList = () => {
+  const dispatch = useDispatch()
+
   const notifications = useSelector(selectAllNotifications)
   const users = useSelector(selectAllUsers)
+
+  React.useEffect(() => {
+    dispatch(allNotificationsRead())
+  })
 
   const renderedNotifications = notifications.map((notification) => {
     const date = parseISO(notification.date)
@@ -18,7 +28,10 @@ export const NotificationsList = () => {
     }
 
     return (
-      <div key={notification.id} className="notification">
+      <div
+        key={notification.id}
+        className={cx({ notification: true, new: notification.isNew })}
+      >
         <div>
           <b>{user.name}</b> {notification.message}
         </div>

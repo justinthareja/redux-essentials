@@ -9,6 +9,9 @@ import {
 export const Navbar = () => {
   const dispatch = useDispatch()
   const notificationStatus = useSelector(selectNotificationsStatus)
+  const unreadNotifications = useSelector((state) =>
+    state.notifications.items.filter((notification) => !notification.read)
+  )
 
   return (
     <nav>
@@ -19,7 +22,12 @@ export const Navbar = () => {
           <div className="navLinks">
             <Link to="/">Posts</Link>
             <Link to="/users">Users</Link>
-            <Link to="/notifications">Notifications</Link>
+            <Link to="/notifications">
+              Notifications{' '}
+              {unreadNotifications.length > 0 && (
+                <span className="badge">{unreadNotifications.length}</span>
+              )}
+            </Link>
           </div>
           <button
             className="button"
