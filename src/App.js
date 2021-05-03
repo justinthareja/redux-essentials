@@ -11,8 +11,10 @@ import { PostsList } from './features/posts/PostsList'
 import { AddPostForm } from './features/posts/AddPostForm'
 import { EditPostForm } from './features/posts/EditPostForm'
 import { PostDetailsPage } from './features/posts/PostDetailsPage'
+import { UsersList } from './features/users/UsersList'
 import { fetchUsers } from './features/users/usersSlice'
 import { useDispatch, useSelector } from 'react-redux'
+import { UserDetailsPage } from './features/users/UserDetailsPage'
 
 function App() {
   const dispatch = useDispatch()
@@ -51,6 +53,8 @@ function App() {
           />
           <Route exact path="/posts/:postId" component={PostDetailsPage} />
           <Route exact path="/editPost/:postId" component={EditPostForm} />
+          <Route exact path="/users" component={UsersList} />
+          <Route exact path="/users/:userId" component={UserDetailsPage} />
           <Redirect to="/" />
         </Switch>
       </div>
