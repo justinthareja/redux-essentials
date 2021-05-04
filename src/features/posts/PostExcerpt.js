@@ -7,6 +7,11 @@ import { selectPostById } from './postsSlice'
 import { useSelector } from 'react-redux'
 
 let PostExcerpt = ({ postId }) => {
+  // by passing just the id to the PostExcerpt, and letting this child
+  // component select the actual post, only if the array of postIds
+  // changes will the parent re-render this component
+  // this prevents PostExceprt from re-rendering when a sibling post
+  // data gets updated
   const post = useSelector((state) => selectPostById(state, postId))
 
   return (
@@ -25,6 +30,7 @@ let PostExcerpt = ({ postId }) => {
   )
 }
 
+// Re-render this component only when the props change.
 PostExcerpt = React.memo(PostExcerpt)
 
 export { PostExcerpt }

@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { addNewPost } from './postsSlice'
+import { selectAllUsers } from '../users/usersSlice'
 
 export function AddPostForm(props) {
   const [title, setTitle] = React.useState('')
@@ -10,7 +11,7 @@ export function AddPostForm(props) {
   const [addRequestStatus, setAddRequestStatus] = React.useState('idle')
 
   const dispatch = useDispatch()
-  const users = useSelector((state) => state.users.users)
+  const users = useSelector(selectAllUsers)
 
   const onTitleChange = (e) => setTitle(e.target.value)
   const onContentChange = (e) => setContent(e.target.value)

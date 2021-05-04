@@ -1,12 +1,22 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import {
+  createAsyncThunk,
+  createEntityAdapter,
+  createSlice,
+} from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 
-const initialState = {
-  status: 'idle',
-  items: [],
-}
+const notificationsAdapter = createEntityAdapter({
+  sortComparer: (a, b) => b.date.localeCompare(a.date),
+})
 
-export const selectAllNotifications = (state) => state.notifications.items
+const initialState = notificationsAdapter.getInitialState({
+  status: 'idle',
+})
+
+export const {
+  selectAll: selectAllNotifications,
+} = notificationsAdapter.getSelectors((state) => state.notifications)
+
 export const selectNotificationsStatus = (state) => state.notifications.status
 
 export const fetchNotifications = createAsyncThunk(
@@ -38,7 +48,9 @@ const notificationsSlice = createSlice({
   initialState,
   reducers: {
     allNotificationsRead: (state, payload) => {
-      state.items.forEach((notification) => (notification.read = true))
+      Object.values(state.entities).forEach((notification) => {
+        notification.read = true
+      })
     },
   },
   extraReducers: {
@@ -48,12 +60,12 @@ const notificationsSlice = createSlice({
     [fetchNotifications.fulfilled]: (state, action) => {
       state.status = 'success'
 
-      state.items.forEach(
-        (notification) => (notification.isNew = !notification.read)
-      )
-      state.items.push(...action.payload)
-      // Sort with newest first
-      state.items.sort((a, b) => b.date.localeCompare(a.date))
+      // keeps unread notifcations as "new"
+      Object.values(state.entities).forEach((notification) => {
+        notification.isNew = !notification.read
+      })
+
+      notificationsAdapter.upsertMany(state, action.payload)
     },
     [fetchNotifications.rejected]: (state, action) => {
       state.status = 'error'

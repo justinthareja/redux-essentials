@@ -1,15 +1,16 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import {
+  createAsyncThunk,
+  createEntityAdapter,
+  createSlice,
+} from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 
-const initialState = {
+const usersAdapter = createEntityAdapter()
+
+const initialState = usersAdapter.getInitialState({
   status: 'idle',
   error: null,
-  users: [],
-}
-
-export const selectAllUsers = (state) => state.users.users
-export const selectUserById = (state, userId) =>
-  state.users.users.find((user) => user.id === userId)
+})
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
   const response = await client.get('/fakeApi/users')
@@ -26,7 +27,8 @@ const userSlice = createSlice({
     },
     [fetchUsers.fulfilled]: (state, action) => {
       state.status = 'success'
-      state.users = state.users.concat(action.payload)
+      // adapter exports a set of reducers for common CRUD functionaliy
+      usersAdapter.setAll(state, action)
     },
     [fetchUsers.rejected]: (state, action) => {
       state.status = 'error'
@@ -34,5 +36,10 @@ const userSlice = createSlice({
     },
   },
 })
+
+export const {
+  selectAll: selectAllUsers,
+  selectById: selectUserById,
+} = usersAdapter.getSelectors((state) => state.users)
 
 export default userSlice.reducer

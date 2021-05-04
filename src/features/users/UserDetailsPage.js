@@ -22,8 +22,8 @@ export function UserDetailsPage({ match }) {
     selectUserPosts(state, userId)
   )
 
-  const renderedUserPosts = memoizedUserPosts.map((post) => (
-    <PostExcerpt key={post.id} post={post} />
+  const renderedUserPosts = user.posts.map((postId) => (
+    <PostExcerpt key={postId} postId={postId} />
   ))
 
   return (

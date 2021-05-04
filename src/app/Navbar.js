@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   fetchNotifications,
   selectNotificationsStatus,
+  selectAllNotifications,
 } from '../features/notifications/notificationsSlice'
 
 export const Navbar = () => {
   const dispatch = useDispatch()
   const notificationStatus = useSelector(selectNotificationsStatus)
-  const notifications = useSelector((state) => state.notifications.items)
+  const notifications = useSelector(selectAllNotifications)
+
   const unreadNotifications = notifications.filter(
     (notification) => !notification.read
   )
