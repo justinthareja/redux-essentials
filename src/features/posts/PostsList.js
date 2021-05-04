@@ -1,13 +1,13 @@
 import * as React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { PostExcerpt } from './PostExcerpt'
-import { selectAllPosts, fetchPosts } from './postsSlice'
+import { fetchPosts, selectPostIds } from './postsSlice'
 
 export function PostsList(props) {
   const dispatch = useDispatch()
 
   // useSelector receives the whole state object
-  const posts = useSelector(selectAllPosts)
+  const postIds = useSelector(selectPostIds)
   const postsStatus = useSelector((state) => state.posts.status)
   const postError = useSelector((state) => state.posts.error)
 
@@ -25,13 +25,8 @@ export function PostsList(props) {
   } else if (postsStatus === 'error') {
     content = <div>{postError}</div>
   } else if (postsStatus === 'success') {
-    // sorts posts in reverse chronological order by datetime string
-    const sortedPosts = posts
-      .slice()
-      .sort((a, b) => b.date.localeCompare(a.date))
-
-    content = sortedPosts.map((post) => (
-      <PostExcerpt key={post.id} post={post} />
+    content = postIds.map((postId) => (
+      <PostExcerpt key={postId} postId={postId} />
     ))
   }
 

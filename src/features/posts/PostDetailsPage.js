@@ -10,7 +10,7 @@ export function PostDetailsPage({ match }) {
   // component will re-render any time the value returned from
   // useSelector changes to a new reference. only select smallest
   // values you need to avoid unnecessary re-renders
-  const post = useSelector(selectPostById(postId))
+  const post = useSelector((state) => selectPostById(state, postId))
 
   if (!post) {
     return (

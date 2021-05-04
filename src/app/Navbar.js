@@ -9,8 +9,9 @@ import {
 export const Navbar = () => {
   const dispatch = useDispatch()
   const notificationStatus = useSelector(selectNotificationsStatus)
-  const unreadNotifications = useSelector((state) =>
-    state.notifications.items.filter((notification) => !notification.read)
+  const notifications = useSelector((state) => state.notifications.items)
+  const unreadNotifications = notifications.filter(
+    (notification) => !notification.read
   )
 
   return (

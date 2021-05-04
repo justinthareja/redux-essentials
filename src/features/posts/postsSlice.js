@@ -1,11 +1,26 @@
-import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit'
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+  nanoid,
+  createEntityAdapter,
+} from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 
-const initialState = {
+// createEntityAdapter is a helper to manage normalization of data
+// returns an object with normalized getters and setters
+const postsAdapter = createEntityAdapter({
+  // sortComparer is a custom function that sorts the entity ids
+  sortComparer: (a, b) => b.date.localeCompare(a.date),
+})
+
+// by default the initial state of the adapter is
+// { ids: [], entities: {} }
+// any additional fields will be merged
+const initialState = postsAdapter.getInitialState({
   status: 'idle',
   error: null,
-  posts: [],
-}
+})
 
 // createAsyncThunk will dispatch "pending" "error" and "success" actions
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
@@ -63,19 +78,20 @@ const postsSlice = createSlice({
       },
     },
     updatePost: (state, action) => {
-      const post = state.posts.find((p) => p.id === action.payload.id)
+      const { id, content, title } = action.payload
+      const post = state.entities[id]
       if (!post) {
         return
       }
 
-      post.content = action.payload.content
-      post.title = action.payload.title
+      post.content = content
+      post.title = title
     },
     incrementReactionCount: (state, action) => {
       // reducers can contain as much logic as necessary to calculate the new state
       // better to do these calculations in a reducer than an action
       const { postId, reaction } = action.payload
-      const post = state.posts.find((p) => p.id === postId)
+      const post = state.entities[postId]
       if (
         !(
           post &&
@@ -95,26 +111,33 @@ const postsSlice = createSlice({
     },
     [fetchPosts.fulfilled]: (state, action) => {
       state.status = 'success'
-      state.posts = state.posts.concat(action.payload)
+      // Use the `upsertMany` reducer as a mutating update utility
+      postsAdapter.upsertMany(state, action.payload)
     },
     [fetchPosts.rejected]: (state, action) => {
       state.status = 'error'
       state.error = action.error.message
     },
-    [addNewPost.fulfilled]: (state, action) => {
-      state.posts.push(action.payload)
-    },
+    // Use the `addOne` reducer for the fulfilled case
+    [addNewPost.fulfilled]: postsAdapter.addOne,
   },
 })
 
-// selector functions - decouples redux state shape from components
-// state for selector functions is root redux state
-// not necessary for everything, but a good idea when accessing the
-// same state in many places
-export const selectAllPosts = (state) => state.posts.posts
+// Export the customized selectors for this adapter using `getSelectors`
+export const {
+  selectAll: selectAllPosts,
+  selectById: selectPostById,
+  selectIds: selectPostIds,
+  // Pass in a selector that returns the posts slice of state
+} = postsAdapter.getSelectors((state) => state.posts)
 
-export const selectPostById = (postId) => (state) =>
-  state.posts.posts.find((post) => post.id === postId)
+// createSelector takes a list of "input selectors" and an
+// "output selector" and returns a memoized selector
+// that will only update if any of the inputs are changed
+export const selectUserPosts = createSelector(
+  [selectAllPosts, (state, userId) => userId],
+  (posts, userId) => posts.filter((post) => post.user === userId)
+)
 
 export const {
   addPost,
